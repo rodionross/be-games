@@ -82,3 +82,13 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("PATCH /api/reviews/:review_id", () => {
+  test("returns updated review object based on the id param", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .expect(201)
+      .send({ inc_votes: 1 })
+      .then(({ body }) => {});
+  });
+});

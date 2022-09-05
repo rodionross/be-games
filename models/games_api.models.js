@@ -59,3 +59,20 @@ exports.selectUsers = () => {
     return rows;
   });
 };
+
+exports.updateReviewById = (review_id, body) => {
+  const { review_id: id } = review_id;
+  const { inc_votes: vote } = body;
+
+  const queryStr = `
+  UPDATE reviews
+  SET votes = votes + $1
+  WHERE review_id = $2
+  RETURNING *;
+  `;
+  const queryValues = [vote, id];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    return rows[0];
+  });
+};
