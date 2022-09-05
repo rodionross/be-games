@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getCategories,
   error404,
+  getReviewsById,
 } = require("./controllers/games_api.controllers");
 
 const app = express();
@@ -9,6 +10,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
+app.get("/api/reviews/:review_id", getReviewsById);
 
 app.use("*", error404);
 
