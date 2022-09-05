@@ -1,52 +1,38 @@
-const request = require("supertest");
-const app = require("../app");
-const db = require("../db/connection");
-const seed = require("../db/seeds/seed");
-const testData = require("../db/data/test-data/index");
-
 const {
   convertTimestampToDate,
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
 
-beforeEach(() => {
-  return seed(testData);
-});
-
-afterAll(() => {
-  return db.end();
-});
-
 describe("convertTimestampToDate", () => {
-  test.skip("returns a new object", () => {
+  test("returns a new object", () => {
     const timestamp = 1557572706232;
     const input = { created_at: timestamp };
     const result = convertTimestampToDate(input);
     expect(result).not.toBe(input);
     expect(result).toBeObject();
   });
-  test.skip("converts a created_at property to a date", () => {
+  test("converts a created_at property to a date", () => {
     const timestamp = 1557572706232;
     const input = { created_at: timestamp };
     const result = convertTimestampToDate(input);
     expect(result.created_at).toBeDate();
     expect(result.created_at).toEqual(new Date(timestamp));
   });
-  test.skip("does not mutate the input", () => {
+  test("does not mutate the input", () => {
     const timestamp = 1557572706232;
     const input = { created_at: timestamp };
     convertTimestampToDate(input);
     const control = { created_at: timestamp };
     expect(input).toEqual(control);
   });
-  test.skip("ignores includes any other key-value-pairs in returned object", () => {
+  test("ignores includes any other key-value-pairs in returned object", () => {
     const input = { created_at: 0, key1: true, key2: 1 };
     const result = convertTimestampToDate(input);
     expect(result.key1).toBe(true);
     expect(result.key2).toBe(1);
   });
-  test.skip("returns unchanged object if no created_at property", () => {
+  test("returns unchanged object if no created_at property", () => {
     const input = { key: "value" };
     const result = convertTimestampToDate(input);
     const expected = { key: "value" };
@@ -55,13 +41,13 @@ describe("convertTimestampToDate", () => {
 });
 
 describe("createRef", () => {
-  test.skip("returns an empty object, when passed an empty array", () => {
+  test("returns an empty object, when passed an empty array", () => {
     const input = [];
     const actual = createRef(input);
     const expected = {};
     expect(actual).toEqual(expected);
   });
-  test.skip("returns a reference object when passed an array with a single items", () => {
+  test("returns a reference object when passed an array with a single items", () => {
     const input = [{ title: "title1", article_id: 1, name: "name1" }];
     let actual = createRef(input, "title", "article_id");
     let expected = { title1: 1 };
@@ -70,7 +56,7 @@ describe("createRef", () => {
     expected = { name1: "title1" };
     expect(actual).toEqual(expected);
   });
-  test.skip("returns a reference object when passed an array with many items", () => {
+  test("returns a reference object when passed an array with many items", () => {
     const input = [
       { title: "title1", article_id: 1 },
       { title: "title2", article_id: 2 },
@@ -80,7 +66,7 @@ describe("createRef", () => {
     const expected = { title1: 1, title2: 2, title3: 3 };
     expect(actual).toEqual(expected);
   });
-  test.skip("does not mutate the input", () => {
+  test("does not mutate the input", () => {
     const input = [{ title: "title1", article_id: 1 }];
     const control = [{ title: "title1", article_id: 1 }];
     createRef(input);
@@ -89,12 +75,12 @@ describe("createRef", () => {
 });
 
 describe("formatComments", () => {
-  test.skip("returns an empty array, if passed an empty array", () => {
+  test("returns an empty array, if passed an empty array", () => {
     const comments = [];
     expect(formatComments(comments, {})).toEqual([]);
     expect(formatComments(comments, {})).not.toBe(comments);
   });
-  test.skip("converts created_by key to author", () => {
+  test("converts created_by key to author", () => {
     const comments = [{ created_by: "ant" }, { created_by: "bee" }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].author).toEqual("ant");
@@ -102,87 +88,17 @@ describe("formatComments", () => {
     expect(formattedComments[1].author).toEqual("bee");
     expect(formattedComments[1].created_by).toBe(undefined);
   });
-  test.skip("replaces belongs_to value with appropriate id when passed a reference object", () => {
+  test("replaces belongs_to value with appropriate id when passed a reference object", () => {
     const comments = [{ belongs_to: "title1" }, { belongs_to: "title2" }];
     const ref = { title1: 1, title2: 2 };
     const formattedComments = formatComments(comments, ref);
     expect(formattedComments[0].article_id).toBe(1);
     expect(formattedComments[1].article_id).toBe(2);
   });
-  test.skip("converts created_at timestamp to a date", () => {
+  test("converts created_at timestamp to a date", () => {
     const timestamp = Date.now();
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
-  });
-});
-
-describe("GET/api/categories", () => {
-  test("return an array of category objects containing slug and description properties", () => {
-    return request(app)
-      .get("/api/categories")
-      .expect(200)
-      .then(({ body }) => {
-        body.categories.forEach((category) => {
-          expect(category).toEqual(
-            expect.objectContaining({
-              slug: expect.any(String),
-              description: expect.any(String),
-            })
-          );
-        });
-      });
-  });
-
-  test("return 404 page not found when incorrect endpoint is inserted", () => {
-    return request(app)
-      .get("/api/incorrectEndpoint:(")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("page not found :(");
-      });
-  });
-});
-
-describe("GET /api/reviews/:review_id", () => {
-  test("returns a review object with correct properties types", () => {
-    return request(app)
-      .get("/api/reviews/2")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.review).toEqual(
-          expect.objectContaining({
-            review_id: expect.any(Number),
-            title: expect.any(String),
-            review_body: expect.any(String),
-            designer: expect.any(String),
-            review_img_url: expect.any(String),
-            votes: expect.any(Number),
-            category: expect.any(String),
-            owner: expect.any(String),
-            created_at: expect.any(String),
-          })
-        );
-      });
-  });
-  test("returns a review object based on the review_id param", () => {
-    const result = {
-      review_id: 2,
-      title: "Jenga",
-      review_body: "Fiddly fun for all the family",
-      designer: "Leslie Scott",
-      review_img_url:
-        "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-      votes: 5,
-      category: "dexterity",
-      owner: "philippaclaire9",
-      created_at: "2021-01-18T10:01:41.251Z",
-    };
-    return request(app)
-      .get("/api/reviews/2")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.review).toEqual(result);
-      });
   });
 });

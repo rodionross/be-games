@@ -1,11 +1,8 @@
 const {
   selectAllCategories,
   selectReviewById,
+  selectusers,
 } = require("../models/games_api.models");
-
-exports.error404 = (req, res) => {
-  res.status(404).send({ msg: "page not found :(" });
-};
 
 exports.getCategories = (req, res, next) => {
   selectAllCategories()
@@ -17,8 +14,22 @@ exports.getCategories = (req, res, next) => {
     });
 };
 
-exports.getReviewsById = (req, res) => {
-  selectReviewById(req.params).then((review) => {
-    res.status(200).send({ review });
-  });
+exports.getReviewsById = (req, res, next) => {
+  selectReviewById(req.params)
+    .then((review) => {
+      res.status(200).send({ review });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  selectusers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

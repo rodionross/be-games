@@ -1,18 +1,15 @@
 const express = require("express");
 const {
   getCategories,
-  error404,
   getReviewsById,
+  getUsers,
 } = require("./controllers/games_api.controllers");
 
 const app = express();
 
-app.use(express.json());
-
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewsById);
-
-app.use("*", error404);
+app.get("/api/users", getUsers);
 
 app.use((err, req, res, next) => {
   res.status(err.status).send({ msg: err.msg });
