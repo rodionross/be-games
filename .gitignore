@@ -2,3 +2,4 @@ node_modules
 .env.*
 check-test-db.sql
 check-test-db.txt
+not_found.js
