@@ -18,7 +18,7 @@ describe("GET/api/categories", () => {
       .get("/api/categories")
       .expect(200)
       .then(({ body }) => {
-        expect(body.categories.length).toBeGreaterThan(0);
+        expect(body.categories.length).toBe(4);
         body.categories.forEach((category) => {
           expect(category).toEqual(
             expect.objectContaining({
@@ -52,13 +52,23 @@ describe("GET /api/reviews/:review_id", () => {
         expect(body.review).toEqual(result);
       });
   });
-  test("returns error if user doesnt exist", () => {
+  test("returns error if review doesnt exist", () => {
     return request(app)
       .get("/api/reviews/9999")
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("review not found");
+      });
+  });
+
+  test("returns error if invalid param is inserted", () => {
+    return request(app)
+      .get("/api/reviews/dogs")
       .expect(400)
       .then(({ body, status }) => {
         expect(status).toBe(400);
-        expect(body.msg).toBe("user not found");
+        expect(body.msg).toBe("bad request");
       });
   });
 });
@@ -69,7 +79,7 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        expect(body.users.length).toBeGreaterThan(0);
+        expect(body.users.length).toBe(4);
         body.users.forEach((user) => {
           expect(user).toEqual(
             expect.objectContaining({

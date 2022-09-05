@@ -15,7 +15,11 @@ app.get("/api/users", getUsers);
 app.patch("/api/reviews/:review_id", updateReview);
 
 app.use((err, req, res, next) => {
-  res.status(err.status).send({ msg: err.msg });
+  if (err.code === "22P02") {
+    res.status(400).send({ msg: "bad request" });
+  } else {
+    res.status(err.status).send({ msg: err.msg });
+  }
 });
 
 module.exports = app;
