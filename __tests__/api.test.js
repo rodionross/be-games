@@ -55,7 +55,7 @@ describe("GET /api/reviews/:review_id", () => {
   test("returns error if review doesnt exist", () => {
     return request(app)
       .get("/api/reviews/9999")
-      .expect(400)
+      .expect(404)
       .then(({ body, status }) => {
         expect(status).toBe(400);
         expect(body.msg).toBe("review not found");
