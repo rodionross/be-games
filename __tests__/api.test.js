@@ -4,12 +4,6 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 
-const {
-  convertTimestampToDate,
-  createRef,
-  formatComments,
-} = require("../db/seeds/utils");
-
 beforeEach(() => {
   return seed(testData);
 });
@@ -65,26 +59,6 @@ describe("GET /api/reviews/:review_id", () => {
       .then(({ body, status }) => {
         expect(status).toBe(400);
         expect(body.msg).toBe("user not found");
-      });
-  });
-});
-
-describe("GET /api/users", () => {
-  test("returns an array of users objects with correct properties types", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.users.length).toBeGreaterThan(0);
-        body.users.forEach((user) => {
-          expect(user).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            })
-          );
-        });
       });
   });
 });

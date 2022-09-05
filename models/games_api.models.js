@@ -39,23 +39,3 @@ exports.selectReviewById = (review_id) => {
     return rows[0];
   });
 };
-
-exports.selectusers = () => {
-  const queryStr = `SELECT * FROM users;`;
-
-  return db.query(queryStr).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 400, msg: "no users" });
-    }
-    rows.forEach((user) => {
-      if (
-        !user.hasOwnProperty("username") ||
-        !user.hasOwnProperty("name") ||
-        !user.hasOwnProperty("avatar_url")
-      ) {
-        return Promise.reject({ status: 400, msg: "wrong properties" });
-      }
-    });
-    return rows;
-  });
-};
