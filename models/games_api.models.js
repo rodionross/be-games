@@ -94,3 +94,24 @@ exports.selectReviews = (query) => {
     return rows;
   });
 };
+
+exports.getCommentsByReviewId = (reviewId) => {
+  const { review_id: id } = reviewId;
+
+  const queryStr = `
+  SELECT comment_id, reviews.votes, reviews.created_at, owner AS author, body, reviews.review_id
+  FROM reviews
+  JOIN comments
+  ON comments.review_id = reviews.review_id
+  WHERE reviews.review_id = $1
+  ORDER BY comment_id;
+  `;
+  const queryValues = [id];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 400, msg: "bad request" });
+    }
+    return rows;
+  });
+};

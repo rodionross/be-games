@@ -227,3 +227,36 @@ describe("GET /api/reviews", () => {
       });
   });
 });
+
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("returns array of comments based on params", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(3);
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+
+  test("returns error if review_id doesnt exist", () => {
+    return request(app)
+      .get("/api/reviews/999/comments")
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
