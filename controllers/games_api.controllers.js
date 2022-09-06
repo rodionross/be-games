@@ -2,6 +2,7 @@ const {
   selectAllCategories,
   selectReviewById,
   selectUsers,
+  updateReviewById,
 } = require("../models/games_api.models");
 
 exports.getCategories = (req, res, next) => {
@@ -28,6 +29,16 @@ exports.getUsers = (req, res, next) => {
   selectUsers()
     .then((users) => {
       res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.updateReview = (req, res, next) => {
+  updateReviewById(req.params, req.body)
+    .then((review) => {
+      res.status(201).send({ review });
     })
     .catch((err) => {
       next(err);
