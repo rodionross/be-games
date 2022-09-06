@@ -5,6 +5,7 @@ const {
   updateReviewById,
   selectReviews,
   getCommentsByReviewId,
+  addCommentByReviewId,
 } = require("../models/games_api.models");
 
 exports.getCategories = (req, res, next) => {
@@ -61,6 +62,16 @@ exports.getComments = (req, res, next) => {
   getCommentsByReviewId(req.params)
     .then((comments) => {
       res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.addComment = (req, res, next) => {
+  addCommentByReviewId(req.params, req.body)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);

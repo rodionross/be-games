@@ -115,3 +115,8 @@ exports.getCommentsByReviewId = (reviewId) => {
     return rows;
   });
 };
+
+exports.addCommentByReviewId = (reviewId, bodyObj) => {
+  const { review_id: id } = reviewId;
+  const { username, body } = bodyObj;
+};

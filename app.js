@@ -25,6 +25,8 @@ app.get("/api/reviews/:review_id/comments", getComments);
 
 app.patch("/api/reviews/:review_id", updateReview);
 
+app.post("/api/reviews/:review_id/comments");
+
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
 app.use(handleServerErrors);
