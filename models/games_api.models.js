@@ -72,4 +72,25 @@ exports.updateReviewById = (reviewId, body) => {
 
 exports.selectReviews = (query) => {
   const { category } = query;
+
+  let queryStr = `
+  SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, COUNT(comments.review_id):: INT AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  ON comments.review_id = reviews.review_id
+  `;
+  const queryValues = [];
+
+  if (category) {
+    queryStr += ` WHERE category = $1`;
+    queryValues.push(category);
+  }
+  queryStr += ` GROUP BY reviews.review_id ORDER BY reviews.created_at DESC;`;
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 400, msg: "bad request" });
+    }
+    return rows;
+  });
 };

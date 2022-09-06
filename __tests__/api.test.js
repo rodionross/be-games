@@ -184,3 +184,46 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET /api/reviews", () => {
+  test("returns an array of review objects sorted by date", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("returns an array of review objects sorted by date and filtered by query", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body }) => {
+        const result = {
+          owner: "philippaclaire9",
+          title: "Jenga",
+          review_id: 2,
+          category: "dexterity",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          created_at: "2021-01-18T10:01:41.251Z",
+          votes: 5,
+          designer: "Leslie Scott",
+          comment_count: 3,
+        };
+        expect(body.reviews.length).toBe(1);
+        expect(body.reviews[0]).toEqual(result);
+      });
+  });
+
+  test("returns an error if category doesnt exist ", () => {
+    return request(app)
+      .get("/api/reviews?category=banana123")
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

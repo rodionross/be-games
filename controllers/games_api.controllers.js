@@ -48,7 +48,9 @@ exports.updateReview = (req, res, next) => {
 
 exports.getReviews = (req, res, next) => {
   selectReviews(req.query)
-    .then()
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
     .catch((err) => {
       next(err);
     });
