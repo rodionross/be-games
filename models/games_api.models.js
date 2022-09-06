@@ -18,9 +18,9 @@ exports.selectReviewById = (review_id) => {
   const { review_id: id } = review_id;
 
   const queryStr = `
-  SELECT reviews.review_id, title, review_body, designer, review_img_url, reviews.votes, category, owner, reviews.created_at, COUNT(review_body) AS comment_count
+  SELECT reviews.review_id, title, review_body, designer, review_img_url, reviews.votes, category, owner, reviews.created_at, COUNT(comments.review_id):: INT AS comment_count
   FROM reviews
-  JOIN comments
+  LEFT JOIN comments
   ON reviews.review_id = comments.review_id
   WHERE reviews.review_id = $1
   GROUP BY reviews.review_id;
@@ -68,4 +68,8 @@ exports.updateReviewById = (reviewId, body) => {
     }
     return rows[0];
   });
+};
+
+exports.selectReviews = (query) => {
+  const { category } = query;
 };
