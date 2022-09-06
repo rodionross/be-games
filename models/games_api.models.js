@@ -10,7 +10,6 @@ exports.selectAllCategories = () => {
         msg: "categories table does not exist",
       });
     }
-
     return rows;
   });
 };
@@ -42,13 +41,15 @@ exports.selectUsers = () => {
     if (rows.length === 0) {
       return Promise.reject({ status: 400, msg: "users table does not exist" });
     }
-
     return rows;
   });
 };
 
-exports.updateReviewById = (review_id, body) => {
-  const { review_id: id } = review_id;
+exports.updateReviewById = (reviewId, body) => {
+  if (!body.hasOwnProperty("inc_votes")) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  const { review_id: id } = reviewId;
   const { inc_votes: vote } = body;
 
   const queryStr = `
@@ -60,6 +61,9 @@ exports.updateReviewById = (review_id, body) => {
   const queryValues = [vote, id];
 
   return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "review not found" });
+    }
     return rows[0];
   });
 };

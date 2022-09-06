@@ -57,7 +57,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/9999")
       .expect(404)
       .then(({ body, status }) => {
-        expect(status).toBe(400);
+        expect(status).toBe(404);
         expect(body.msg).toBe("review not found");
       });
   });
@@ -94,11 +94,58 @@ describe("GET /api/users", () => {
 });
 
 describe("PATCH /api/reviews/:review_id", () => {
-  test("returns updated review object based on the id param", () => {
+  test("returns updated review object based on the review_id param", () => {
     return request(app)
       .patch("/api/reviews/2")
+      .send({ inc_votes: 2 })
       .expect(201)
-      .send({ inc_votes: 1 })
-      .then(({ body }) => {});
+      .then(({ body }) => {
+        const result = {
+          review_id: 2,
+          title: "Jenga",
+          category: "dexterity",
+          designer: "Leslie Scott",
+          owner: "philippaclaire9",
+          review_body: "Fiddly fun for all the family",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          created_at: "2021-01-18T10:01:41.251Z",
+          votes: 7,
+        };
+        expect(body.review).toEqual(result);
+      });
+  });
+
+  test("returns a 404 error if review doesnt exists", () => {
+    return request(app)
+      .patch("/api/reviews/9999")
+      .send({ inc_votes: 2 })
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toBe("review not found");
+      });
+  });
+
+  test("returns a 400 bad request if inc_votes is not an integer", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send({ inc_votes: "a" })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("returns a 400 bad request if body is not an object and does not have property of inc_votes", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send("notAnObject")
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
   });
 });
