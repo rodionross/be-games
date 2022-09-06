@@ -3,6 +3,7 @@ const {
   selectReviewById,
   selectUsers,
   updateReviewById,
+  selectReviews,
 } = require("../models/games_api.models");
 
 exports.getCategories = (req, res, next) => {
@@ -40,6 +41,14 @@ exports.updateReview = (req, res, next) => {
     .then((review) => {
       res.status(201).send({ review });
     })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getReviews = (req, res, next) => {
+  selectReviews(req.query)
+    .then()
     .catch((err) => {
       next(err);
     });

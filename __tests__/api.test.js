@@ -44,6 +44,7 @@ describe("GET /api/reviews/:review_id", () => {
       category: "dexterity",
       owner: "philippaclaire9",
       created_at: "2021-01-18T10:01:41.251Z",
+      comment_count: 3,
     };
     return request(app)
       .get("/api/reviews/2")
@@ -52,6 +53,29 @@ describe("GET /api/reviews/:review_id", () => {
         expect(body.review).toEqual(result);
       });
   });
+
+  test("returns a review object based on the review_id param with comment_count as 0 if no comments were made", () => {
+    const result = {
+      review_id: 1,
+      title: "Agricola",
+      review_body: "Farmyard fun!",
+      designer: "Uwe Rosenberg",
+      review_img_url:
+        "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+      votes: 1,
+      category: "euro game",
+      owner: "mallionaire",
+      created_at: "2021-01-18T10:00:20.514Z",
+      comment_count: 0,
+    };
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toEqual(result);
+      });
+  });
+
   test("returns error if review doesnt exist", () => {
     return request(app)
       .get("/api/reviews/9999")

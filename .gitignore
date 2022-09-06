@@ -2,4 +2,4 @@ node_modules
 .env.*
 check-test-db.sql
 check-test-db.txt
-
+db/seeds/run-test-seed.js
