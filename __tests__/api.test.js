@@ -148,4 +148,15 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(body.msg).toBe("bad request");
       });
   });
+
+  test("returns a 400 bad request if body is an object but has a different property", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send({ votes: 2 })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
 });
