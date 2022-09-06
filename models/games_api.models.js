@@ -18,11 +18,12 @@ exports.selectReviewById = (review_id) => {
   const { review_id: id } = review_id;
 
   const queryStr = `
-  SELECT review_id, title, review_body, designer, review_img_url, votes, slug AS category, owner, created_at
+  SELECT reviews.review_id, title, review_body, designer, review_img_url, reviews.votes, category, owner, reviews.created_at, COUNT(review_body) AS comment_count
   FROM reviews
-  JOIN categories
-  ON reviews.category = categories.slug
-  WHERE review_id = $1;
+  JOIN comments
+  ON reviews.review_id = comments.review_id
+  WHERE reviews.review_id = $1
+  GROUP BY reviews.review_id;
   `;
   const queryValues = [id];
 
@@ -58,6 +59,7 @@ exports.updateReviewById = (reviewId, body) => {
   WHERE review_id = $2
   RETURNING *;
   `;
+
   const queryValues = [vote, id];
 
   return db.query(queryStr, queryValues).then(({ rows }) => {
