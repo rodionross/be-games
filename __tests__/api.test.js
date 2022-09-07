@@ -259,4 +259,13 @@ describe("GET /api/reviews/:review_id/comments", () => {
         expect(body.msg).toBe("bad request");
       });
   });
+  test("returns error if review_id exists but no comments are made", () => {
+    return request(app)
+      .get("/api/reviews/10/comments")
+      .expect(200)
+      .then(({ body, status }) => {
+        expect(status).toBe(200);
+        expect(body.msg).toBe("no comments made for review id: 10");
+      });
+  });
 });
