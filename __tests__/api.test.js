@@ -53,7 +53,6 @@ describe("GET /api/reviews/:review_id", () => {
         expect(body.review).toEqual(result);
       });
   });
-
   test("returns a review object based on the review_id param with comment_count as 0 if no comments were made", () => {
     const result = {
       review_id: 1,
@@ -75,7 +74,6 @@ describe("GET /api/reviews/:review_id", () => {
         expect(body.review).toEqual(result);
       });
   });
-
   test("returns error if review doesnt exist", () => {
     return request(app)
       .get("/api/reviews/9999")
@@ -85,7 +83,6 @@ describe("GET /api/reviews/:review_id", () => {
         expect(body.msg).toBe("review not found");
       });
   });
-
   test("returns error if invalid param is inserted", () => {
     return request(app)
       .get("/api/reviews/dogs")
@@ -139,7 +136,6 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(body.review).toEqual(result);
       });
   });
-
   test("returns a 404 error if review doesnt exists", () => {
     return request(app)
       .patch("/api/reviews/9999")
@@ -150,7 +146,6 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(body.msg).toBe("review not found");
       });
   });
-
   test("returns a 400 bad request if inc_votes is not an integer", () => {
     return request(app)
       .patch("/api/reviews/2")
@@ -161,7 +156,6 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(body.msg).toBe("bad request");
       });
   });
-
   test("returns a 400 bad request if body is not an object and does not have property of inc_votes", () => {
     return request(app)
       .patch("/api/reviews/2")
@@ -172,7 +166,6 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(body.msg).toBe("bad request");
       });
   });
-
   test("returns a 400 bad request if body is an object but has a different property", () => {
     return request(app)
       .patch("/api/reviews/2")
@@ -194,7 +187,6 @@ describe("GET /api/reviews", () => {
         expect(body.reviews).toBeSortedBy("created_at", { descending: true });
       });
   });
-
   test("returns an array of review objects sorted by date and filtered by query", () => {
     return request(app)
       .get("/api/reviews?category=dexterity")
@@ -216,10 +208,9 @@ describe("GET /api/reviews", () => {
         expect(body.reviews[0]).toEqual(result);
       });
   });
-
   test("returns an error if category doesnt exist ", () => {
     return request(app)
-      .get("/api/reviews?category=banana123")
+      .get("/api/reviews?category=doggo123")
       .expect(400)
       .then(({ body, status }) => {
         expect(status).toBe(400);
@@ -249,14 +240,92 @@ describe("GET /api/reviews/:review_id/comments", () => {
         });
       });
   });
-
-  test("returns error if review_id doesnt exist", () => {
+  test("returns 404 error if review_id doesnt exist", () => {
     return request(app)
       .get("/api/reviews/999/comments")
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toBe("review id: 999 not found");
+      });
+  });
+  test("returns 400 error if review_id is invalid (not an integer)", () => {
+    return request(app)
+      .get("/api/reviews/doggos/comments")
       .expect(400)
       .then(({ body, status }) => {
         expect(status).toBe(400);
         expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns 200 error if review_id exists but no comments are made", () => {
+    return request(app)
+      .get("/api/reviews/10/comments")
+      .expect(200)
+      .then(({ body, status }) => {
+        expect(status).toBe(200);
+        expect(body.msg).toBe("no comments made for review id: 10");
+      });
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("returns a comment object with correct propertires", () => {
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .send({ username: "mallionaire", body: "board games" })
+      .expect(201)
+      .then(({ body }) => {
+        const result = {
+          comment_id: 7,
+          body: "board games",
+          review_id: 2,
+          author: "mallionaire",
+          votes: 0,
+          created_at: expect.any(String),
+        };
+
+        expect(body.comment).toEqual(result);
+      });
+  });
+  test("returns a 400 error if username is incorrect for the review_id", () => {
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .send({ username: "not_a_name", body: "board games" })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("incorrect username for the review id");
+      });
+  });
+  test("returns a 400 error if review_id exists and body is incorrect type", () => {
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .send('username: "not_a_name", body: "board games"')
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns a 400 error if review_id exists and body object includes incorrect properties", () => {
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .send({ person: "not_a_name", comment: "board games" })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns 404 error if review_id doesnt exist and body object contains correct properties", () => {
+    return request(app)
+      .post("/api/reviews/9999/comments")
+      .send({ username: "mallionare", body: "board games" })
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toBe("review id doesn't exist");
       });
   });
 });
