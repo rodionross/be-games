@@ -72,4 +72,57 @@ exports.updateReviewById = (reviewId, body) => {
 
 exports.selectReviews = (query) => {
   const { category } = query;
+
+  let queryStr = `
+  SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, COUNT(comments.review_id):: INT AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  ON comments.review_id = reviews.review_id
+  `;
+  const queryValues = [];
+
+  if (category) {
+    queryStr += ` WHERE category = $1`;
+    queryValues.push(category);
+  }
+  queryStr += ` GROUP BY reviews.review_id ORDER BY reviews.created_at DESC;`;
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 400, msg: "bad request" });
+    }
+    return rows;
+  });
+};
+
+exports.getCommentsByReviewId = (reviewId) => {
+  const { review_id: id } = reviewId;
+
+  const queryStr = `
+  SELECT comment_id, reviews.votes, reviews.created_at, owner AS author, body, reviews.review_id
+  FROM reviews
+  LEFT JOIN comments
+  ON comments.review_id = reviews.review_id
+  AND body IS NOT NULL
+  WHERE reviews.review_id = $1
+  ORDER BY comment_id;
+  `;
+  const queryValues = [id];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 400, msg: "bad request" });
+    } else if (!rows[0].comment_id) {
+      return Promise.reject({
+        status: 200,
+        msg: `no comments made for review id: ${id}`,
+      });
+    }
+    return rows;
+  });
+};
+
+exports.addCommentByReviewId = (reviewId, bodyObj) => {
+  const { review_id: id } = reviewId;
+  const { username, body } = bodyObj;
 };

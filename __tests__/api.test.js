@@ -184,3 +184,88 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET /api/reviews", () => {
+  test("returns an array of review objects sorted by date", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("returns an array of review objects sorted by date and filtered by query", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body }) => {
+        const result = {
+          owner: "philippaclaire9",
+          title: "Jenga",
+          review_id: 2,
+          category: "dexterity",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          created_at: "2021-01-18T10:01:41.251Z",
+          votes: 5,
+          designer: "Leslie Scott",
+          comment_count: 3,
+        };
+        expect(body.reviews.length).toBe(1);
+        expect(body.reviews[0]).toEqual(result);
+      });
+  });
+
+  test("returns an error if category doesnt exist ", () => {
+    return request(app)
+      .get("/api/reviews?category=banana123")
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("returns array of comments based on params", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(3);
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+
+  test("returns error if review_id doesnt exist", () => {
+    return request(app)
+      .get("/api/reviews/999/comments")
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns error if review_id exists but no comments are made", () => {
+    return request(app)
+      .get("/api/reviews/10/comments")
+      .expect(200)
+      .then(({ body, status }) => {
+        expect(status).toBe(200);
+        expect(body.msg).toBe("no comments made for review id: 10");
+      });
+  });
+});
