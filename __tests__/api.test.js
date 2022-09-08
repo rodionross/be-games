@@ -178,7 +178,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-describe.only("GET /api/reviews", () => {
+describe("GET /api/reviews", () => {
   test("returns an array of review objects sorted by date", () => {
     return request(app)
       .get("/api/reviews")
