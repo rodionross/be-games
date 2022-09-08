@@ -362,3 +362,35 @@ describe("POST /api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("returns status 204 if comment_id exists", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {
+        return db.query("SELECT * FROM comments WHERE comment_id = 1;");
+      })
+      .then((result) => {
+        expect(result.rows.length).toBe(0);
+      });
+  });
+  test("returns status 404 if comment_id doesn't exist", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toBe("comment id: 9999 doesn't exist");
+      });
+  });
+  test("returns status 400 if comment_id is of invalid type", () => {
+    return request(app)
+      .delete("/api/comments/not-integer")
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

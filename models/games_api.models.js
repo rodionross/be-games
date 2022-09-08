@@ -146,3 +146,25 @@ exports.addCommentByReviewId = (reviewId, bodyObj) => {
     return rows[0];
   });
 };
+
+exports.deleteCommentById = (commentId) => {
+  const { comment_id: id } = commentId;
+
+  const queryStr = `
+  DELETE FROM comments
+  WHERE comment_id = $1
+  RETURNING *;
+  `;
+  const queryValues = [id];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: `comment id: ${id} doesn't exist`,
+      });
+    }
+    const status = 204;
+    return status;
+  });
+};
