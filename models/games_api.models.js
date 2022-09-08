@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkQuery } = require("../utilities/check_query");
 
 exports.selectAllCategories = () => {
   const queryStr = `SELECT * FROM categories;`;
@@ -85,7 +86,12 @@ exports.selectReviews = (query) => {
     queryStr += ` WHERE category = $1`;
     queryValues.push(category);
   }
-  queryStr += ` GROUP BY reviews.review_id ORDER BY reviews.created_at DESC;`;
+
+  const result = checkQuery(query);
+  if (typeof result === "object") {
+    return Promise.reject(result);
+  }
+  queryStr += result;
 
   return db.query(queryStr, queryValues).then(({ rows }) => {
     if (rows.length === 0) {

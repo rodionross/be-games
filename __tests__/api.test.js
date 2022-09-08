@@ -178,7 +178,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-describe("GET /api/reviews", () => {
+describe.only("GET /api/reviews", () => {
   test("returns an array of review objects sorted by date", () => {
     return request(app)
       .get("/api/reviews")
@@ -214,6 +214,15 @@ describe("GET /api/reviews", () => {
       .expect(400)
       .then(({ body, status }) => {
         expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  // ticket 11
+  test("ticket 11", () => {
+    return request(app)
+      .get("/api/reviews?category=stuff&sort_by=title&order=asc")
+      .expect(400)
+      .then(({ body }) => {
         expect(body.msg).toBe("bad request");
       });
   });
@@ -311,7 +320,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
   test("returns a 400 error if review_id exists and body object includes incorrect properties", () => {
     return request(app)
       .post("/api/reviews/2/comments")
-      .send({ person: "not_a_name", comment: "board games" })
+      .send({ person: "mallionare", comment: "board games" })
       .expect(400)
       .then(({ body, status }) => {
         expect(status).toBe(400);
