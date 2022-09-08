@@ -13,6 +13,7 @@ const {
   getComments,
   addComment,
   deleteComment,
+  notFound404,
 } = require("./controllers/games_api.controllers");
 
 const app = express();
@@ -30,6 +31,8 @@ app.patch("/api/reviews/:review_id", updateReview);
 app.post("/api/reviews/:review_id/comments", addComment);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.use("*", notFound404);
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
