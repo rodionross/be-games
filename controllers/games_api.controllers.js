@@ -82,7 +82,7 @@ exports.addComment = (req, res, next) => {
 exports.deleteComment = (req, res, next) => {
   deleteCommentById(req.params)
     .then((status) => {
-      res.status(status).end();
+      res.status(status).send();
     })
     .catch((err) => {
       next(err);
