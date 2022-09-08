@@ -218,12 +218,36 @@ describe.only("GET /api/reviews", () => {
       });
   });
   // ticket 11
-  test("ticket 11", () => {
+  test("returns 400 error if all queries are invalid", () => {
     return request(app)
-      .get("/api/reviews?category=stuff&sort_by=title&order=asc")
+      .get("/api/reviews?category=banana&sort_by=banana&order=banana")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns 400 error if category query is valid and other queries are invalid", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity&sort_by=banana&order=banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns 400 error if category and sort_by query are valid and sort is invalid", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity&sort_by=title&order=banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns an array by category, sort_by and order if all queries are valid", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("title", { ascending: true });
       });
   });
 });

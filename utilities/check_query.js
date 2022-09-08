@@ -28,11 +28,11 @@ exports.checkQuery = (queries) => {
     return ` GROUP BY reviews.review_id ORDER BY reviews.created_at DESC;`;
   } else if (!columnExists || !orderExists) {
     return rejected;
+  } else if (columnExists && orderExists) {
+    return ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order};`;
   } else if (columnExists) {
     return ` GROUP BY reviews.review_id ORDER BY ${sort_by} DESC;`;
-  } else if (orderExists) {
-    return ` GROUP BY reviews.review_id ORDER BY reviews.created_at ${order};`;
   } else {
-    return ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order};`;
+    return ` GROUP BY reviews.review_id ORDER BY reviews.created_at ${order};`;
   }
 };
