@@ -9,7 +9,7 @@
     "test-api": "jest __tests__/api.test.js",
     "test-utils": "jest __tests__/utils.test.js",
     "prepare": "husky install",
-    "db-test": "node db/seeds/run-test-seed.js && psql -f check-test-db.sql > check-test-db.txt"
+    "db-test": "psql -f check-test-db.sql > check-test-db.txt"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "supertest": "^6.2.4"
   },
   "devDependencies": {
-    "husky": "^7.0.0",
+    "husky": "^8.0.0",
     "jest": "^27.5.1",
     "jest-extended": "^2.0.0"
   },

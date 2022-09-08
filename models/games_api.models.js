@@ -111,7 +111,7 @@ exports.getCommentsByReviewId = (reviewId) => {
 
   return db.query(queryStr, queryValues).then(({ rows }) => {
     if (rows.length === 0) {
-      return Promise.reject({ status: 400, msg: "bad request" });
+      return Promise.reject({ status: 404, msg: `review id: ${id} not found` });
     } else if (!rows[0].comment_id) {
       return Promise.reject({
         status: 200,
@@ -123,6 +123,20 @@ exports.getCommentsByReviewId = (reviewId) => {
 };
 
 exports.addCommentByReviewId = (reviewId, bodyObj) => {
+  if (!bodyObj.hasOwnProperty("username") || !bodyObj.hasOwnProperty("body")) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   const { review_id: id } = reviewId;
   const { username, body } = bodyObj;
+
+  const queryStr = `
+  INSERT INTO comments (review_id, author, body)
+  VALUES ($1, $2, $3)
+  RETURNING *;
+  `;
+  const queryValues = [id, username, body];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    return rows[0];
+  });
 };
