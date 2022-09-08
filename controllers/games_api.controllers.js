@@ -9,8 +9,14 @@ const {
   deleteCommentById,
 } = require("../models/games_api.models");
 
+const endpoints = require("../endpoints.json");
+
 exports.notFound404 = (req, res) => {
   res.status(404).send({ msg: "page not found :(" });
+};
+
+exports.getApi = (req, res) => {
+  res.status(200).send(endpoints);
 };
 
 exports.getCategories = (req, res, next) => {

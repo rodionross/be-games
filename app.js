@@ -14,6 +14,7 @@ const {
   addComment,
   deleteComment,
   notFound404,
+  getApi,
 } = require("./controllers/games_api.controllers");
 
 const app = express();
@@ -25,6 +26,7 @@ app.get("/api/reviews/:review_id", getReviewsById);
 app.get("/api/reviews", getReviews);
 app.get("/api/users", getUsers);
 app.get("/api/reviews/:review_id/comments", getComments);
+app.get("/api", getApi);
 
 app.patch("/api/reviews/:review_id", updateReview);
 
