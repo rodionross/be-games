@@ -213,3 +213,27 @@ exports.updateCommentById = (commentId, body) => {
     return rows[0];
   });
 };
+
+exports.addReview = (newReview) => {
+  if (
+    !newReview.hasOwnProperty("owner") ||
+    !newReview.hasOwnProperty("title") ||
+    !newReview.hasOwnProperty("review_body") ||
+    !newReview.hasOwnProperty("designer") ||
+    !newReview.hasOwnProperty("category")
+  ) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  const { owner, title, review_body, designer, category } = newReview;
+
+  const queryStr = `
+  INSERT INTO reviews (owner, title, review_body, designer, category)
+  VALUES ($1, $2, $3, $4, $5)
+  RETURNING *;
+  `;
+  const queryValues = [owner, title, review_body, designer, category];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    return rows[0];
+  });
+};

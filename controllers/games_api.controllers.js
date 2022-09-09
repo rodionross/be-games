@@ -9,6 +9,7 @@ const {
   deleteCommentById,
   selectUserByUsername,
   updateCommentById,
+  addReview,
 } = require("../models/games_api.models");
 
 const endpoints = require("../endpoints.json");
@@ -115,6 +116,16 @@ exports.updateComments = (req, res, next) => {
   updateCommentById(req.params, req.body)
     .then((updatedComment) => {
       res.status(201).send({ updatedComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.addReviews = (req, res, next) => {
+  addReview(req.body)
+    .then((newReview) => {
+      res.status(201).send({ newReview });
     })
     .catch((err) => {
       next(err);
