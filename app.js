@@ -17,6 +17,7 @@ const {
   getApi,
   getUsersByUsername,
   updateComments,
+  addReviews,
 } = require("./controllers/games_api.controllers");
 
 const app = express();
@@ -35,6 +36,7 @@ app.patch("/api/reviews/:review_id", updateReviews);
 app.patch("/api/comments/:comment_id", updateComments);
 
 app.post("/api/reviews/:review_id/comments", addComment);
+app.post("/api/reviews", addReviews);
 
 app.delete("/api/comments/:comment_id", deleteComment);
 

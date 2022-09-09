@@ -19,6 +19,13 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     err.constraint === "comments_review_id_fkey"
   ) {
     res.status(404).send({ msg: "review id doesn't exist" });
+  } else if (err.code === "23503" && err.constraint === "reviews_owner_fkey") {
+    res.status(404).send({ msg: "owner doesn't exist" });
+  } else if (
+    err.code === "23503" &&
+    err.constraint === "reviews_category_fkey"
+  ) {
+    res.status(404).send({ msg: "category doesn't exist" });
   } else {
     next(err);
   }

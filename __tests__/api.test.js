@@ -217,7 +217,6 @@ describe("GET /api/reviews", () => {
         expect(body.msg).toBe("bad request");
       });
   });
-  // ticket 11
   test("returns 400 error if all queries are invalid", () => {
     return request(app)
       .get("/api/reviews?category=banana&sort_by=banana&order=banana")
@@ -494,6 +493,115 @@ describe("PATCH /api/comments/:comment_id", () => {
       .then(({ body, status }) => {
         expect(status).toBe(400);
         expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("POST /api/reviews", () => {
+  test("return new review object", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        owner: "mallionaire",
+        title: "test",
+        review_body: "test",
+        designer: "test",
+        category: "dexterity",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const result = {
+          review_id: 14,
+          title: "test",
+          category: "dexterity",
+          designer: "test",
+          owner: "mallionaire",
+          review_body: "test",
+          review_img_url:
+            "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+          created_at: expect.any(String),
+          votes: 0,
+        };
+        expect(body.newReview).toEqual(result);
+      });
+  });
+  test("returns 404 error if username doesn't exist", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        owner: "not_a_username",
+        title: "test",
+        review_body: "test",
+        designer: "test",
+        category: "dexterity",
+      })
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toBe("owner doesn't exist");
+      });
+  });
+  test("returns 404 error if category doesn't exist", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        owner: "mallionaire",
+        title: "test",
+        review_body: "test",
+        designer: "test",
+        category: "not_a_category",
+      })
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toBe("category doesn't exist");
+      });
+  });
+  test("returns 400 error if incorrect property of request object", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        username: "mallionaire",
+        title: "test",
+        review_body: "test",
+        designer: "test",
+        category: "dexterity",
+      })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns 400 error if property is missing in request object", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        username: "mallionaire",
+        review_body: "test",
+        designer: "test",
+        category: "dexterity",
+      })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns error 400 if properties are empty", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        owner: "mallionaire",
+        title: "",
+        review_body: "test",
+        designer: "",
+        category: "dexterity",
+      })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("no empty values");
       });
   });
 });
