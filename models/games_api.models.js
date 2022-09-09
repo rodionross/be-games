@@ -186,3 +186,30 @@ exports.selectUserByUsername = (username) => {
     return rows[0];
   });
 };
+
+exports.updateCommentById = (commentId, body) => {
+  if (!body.hasOwnProperty("inc_votes")) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  const { comment_id: id } = commentId;
+  const { inc_votes: votes } = body;
+
+  const queryStr = `
+  UPDATE comments
+  SET votes = votes + $1
+  WHERE comment_id = $2
+  RETURNING *;
+  `;
+
+  const queryValues = [votes, id];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: `comment id: ${id} not found`,
+      });
+    }
+    return rows[0];
+  });
+};
