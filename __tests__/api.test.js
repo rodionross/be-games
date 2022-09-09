@@ -420,3 +420,80 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("returns updated comment object", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: 2 })
+      .expect(201)
+      .then(({ body }) => {
+        const result = {
+          comment_id: 2,
+          body: "My dog loved this game too!",
+          review_id: 3,
+          author: "mallionaire",
+          votes: 15,
+          created_at: "2021-01-18T10:09:05.410Z",
+        };
+        expect(body.updatedComment).toEqual(result);
+      });
+  });
+  test("returns updated comment object", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: -2 })
+      .expect(201)
+      .then(({ body }) => {
+        const result = {
+          comment_id: 2,
+          body: "My dog loved this game too!",
+          review_id: 3,
+          author: "mallionaire",
+          votes: 11,
+          created_at: "2021-01-18T10:09:05.410Z",
+        };
+        expect(body.updatedComment).toEqual(result);
+      });
+  });
+  test("returns a 404 error if comment doesnt exists", () => {
+    return request(app)
+      .patch("/api/comments/9999")
+      .send({ inc_votes: 2 })
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toBe("comment id: 9999 not found");
+      });
+  });
+  test("returns a 400 bad request if inc_votes is not an integer", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: "a" })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns a 400 bad request if body is not an object and does not have property of inc_votes", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send("notAnObject")
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("returns a 400 bad request if body is an object but has a different property", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ votes: 2 })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

@@ -8,6 +8,7 @@ const {
   addCommentByReviewId,
   deleteCommentById,
   selectUserByUsername,
+  updateCommentById,
 } = require("../models/games_api.models");
 
 const endpoints = require("../endpoints.json");
@@ -50,7 +51,7 @@ exports.getUsers = (req, res, next) => {
     });
 };
 
-exports.updateReview = (req, res, next) => {
+exports.updateReviews = (req, res, next) => {
   updateReviewById(req.params, req.body)
     .then((review) => {
       res.status(201).send({ review });
@@ -106,7 +107,16 @@ exports.getUsersByUsername = (req, res, next) => {
       res.status(200).send({ user });
     })
     .catch((err) => {
-      console.log(err);
+      next(err);
+    });
+};
+
+exports.updateComments = (req, res, next) => {
+  updateCommentById(req.params, req.body)
+    .then((updatedComment) => {
+      res.status(201).send({ updatedComment });
+    })
+    .catch((err) => {
       next(err);
     });
 };
