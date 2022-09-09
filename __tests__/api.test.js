@@ -588,4 +588,20 @@ describe("POST /api/reviews", () => {
         expect(body.msg).toBe("bad request");
       });
   });
+  test("returns error 400 if properties are empty", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        owner: "mallionaire",
+        title: "",
+        review_body: "test",
+        designer: "",
+        category: "dexterity",
+      })
+      .expect(400)
+      .then(({ body, status }) => {
+        expect(status).toBe(400);
+        expect(body.msg).toBe("no empty values");
+      });
+  });
 });

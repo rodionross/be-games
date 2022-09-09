@@ -225,6 +225,9 @@ exports.addReview = (newReview) => {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   const { owner, title, review_body, designer, category } = newReview;
+  if (title.length === 0 || review_body.length === 0 || designer.length === 0) {
+    return Promise.reject({ status: 400, msg: "no empty values" });
+  }
 
   const queryStr = `
   INSERT INTO reviews (owner, title, review_body, designer, category)
