@@ -15,6 +15,7 @@ const {
   deleteComment,
   notFound404,
   getApi,
+  getUsersByUsername,
 } = require("./controllers/games_api.controllers");
 
 const app = express();
@@ -26,13 +27,15 @@ app.get("/api/reviews/:review_id", getReviewsById);
 app.get("/api/reviews", getReviews);
 app.get("/api/users", getUsers);
 app.get("/api/reviews/:review_id/comments", getComments);
-app.get("/api", getApi);
+app.get("/api/users/:username", getUsersByUsername);
 
 app.patch("/api/reviews/:review_id", updateReview);
 
 app.post("/api/reviews/:review_id/comments", addComment);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api", getApi);
 
 app.use("*", notFound404);
 

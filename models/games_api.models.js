@@ -168,3 +168,21 @@ exports.deleteCommentById = (commentId) => {
     return status;
   });
 };
+
+exports.selectUserByUsername = (username) => {
+  const queryStr = `
+    SELECT * FROM users
+    WHERE username = $1;
+  `;
+  const queryValues = [username];
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: `username: ${username} not found`,
+      });
+    }
+    return rows[0];
+  });
+};

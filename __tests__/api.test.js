@@ -394,3 +394,29 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("returns user object", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then(({ body }) => {
+        result = {
+          username: "mallionaire",
+          name: "haz",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        };
+        expect(body.user).toEqual(result);
+      });
+  });
+  test("return user object", () => {
+    return request(app)
+      .get("/api/users/not_a_username")
+      .expect(404)
+      .then(({ body, status }) => {
+        expect(status).toBe(404);
+        expect(body.msg).toEqual("username: not_a_username not found");
+      });
+  });
+});
