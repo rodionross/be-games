@@ -439,6 +439,23 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(body.updatedComment).toEqual(result);
       });
   });
+  test("returns updated comment object", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: -2 })
+      .expect(201)
+      .then(({ body }) => {
+        const result = {
+          comment_id: 2,
+          body: "My dog loved this game too!",
+          review_id: 3,
+          author: "mallionaire",
+          votes: 11,
+          created_at: "2021-01-18T10:09:05.410Z",
+        };
+        expect(body.updatedComment).toEqual(result);
+      });
+  });
   test("returns a 404 error if comment doesnt exists", () => {
     return request(app)
       .patch("/api/comments/9999")
