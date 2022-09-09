@@ -16,6 +16,7 @@ const {
   notFound404,
   getApi,
 } = require("./controllers/games_api.controllers");
+const path = require("path");
 
 const app = express();
 
@@ -35,7 +36,10 @@ app.post("/api/reviews/:review_id/comments", addComment);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use("*", notFound404);
-app.use("/", express.static("./public.public.html"));
+app.use(
+  "/static",
+  express.static(path.join(__dirname, "./public/public.html"))
+);
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
