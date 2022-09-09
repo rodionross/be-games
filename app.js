@@ -16,11 +16,14 @@ const {
   notFound404,
   getApi,
 } = require("./controllers/games_api.controllers");
+
 const path = require("path");
 
 const app = express();
 
 app.use(express.json());
+
+app.use("/", express.static(path.join(__dirname, "/public/public.html")));
 
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewsById);
