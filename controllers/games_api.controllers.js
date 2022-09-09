@@ -7,6 +7,7 @@ const {
   getCommentsByReviewId,
   addCommentByReviewId,
   deleteCommentById,
+  selectUserByUsername,
 } = require("../models/games_api.models");
 
 const endpoints = require("../endpoints.json");
@@ -95,6 +96,17 @@ exports.deleteComment = (req, res, next) => {
       res.status(status).send();
     })
     .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsersByUsername = (req, res, next) => {
+  selectUserByUsername(req.params.username)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((err) => {
+      console.log(err);
       next(err);
     });
 };
